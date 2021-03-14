@@ -1,23 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import Header from './components/Header';
+import GameOver from './components/GameOver';
+import GameBoard from './components/GameBoard';
+import {useState} from 'react';
 
 function App() {
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [chosenCards, setChosen] = useState([]);
+  const [gameOver, setGameOver] = useState(false);
+
+  const addScore = () => {
+    setScore(score + 1);
+  }
+
+  const handleHighScore = () => {
+    setHighScore(score);
+  }
+
+  const addNewChosen = (card) => {
+    setChosen((prevChosen) => [...chosenCards, card]);
+  }
+
+  const resetGame = () => {
+    setScore(0);
+    setChosen([]);
+  }
+  
+  const gameFlow = (cardName) => {
+    if(chosenCards.includes(cardName) || score === 6){
+      handleHighScore();
+      resetGame();
+      handleGameOver();
+    }else{
+      addNewChosen(cardName);
+      addScore();
+    }
+  }
+
+  const handleGameOver = () => {
+    setGameOver(!gameOver);
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+        <Header score={score} highScore={highScore} />
+        {gameOver && (<GameOver onClick={handleGameOver}/>)}
+        <GameBoard score={score} highScore={highScore} onPlay={gameFlow}/>
     </div>
   );
 }
